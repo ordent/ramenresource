@@ -1,10 +1,10 @@
 <?php
 
-namespace Prototype\Resource;
+namespace Ordent\RamenResource;
 
 use ReflectionException;
 use Illuminate\Database\Eloquent\Model;
-use Prototype\Resource\Errors\ErrorTrait;
+use Ordent\RamenResource\Errors\ErrorTrait;
 
 class Client
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Prototype\Resource;
+namespace Ordent\RamenResource;
 
 class Container
 {

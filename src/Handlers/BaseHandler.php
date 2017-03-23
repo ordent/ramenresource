@@ -1,12 +1,12 @@
 <?php
 
-namespace Prototype\Resource\Handlers;
+namespace Ordent\RamenResource\Handlers;
 
 use BadMethodCallException;
 use Validator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Prototype\Resource\Errors\ErrorTrait;
+use Ordent\RamenResource\Errors\ErrorTrait;
 
 class BaseHandler
 {

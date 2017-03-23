@@ -1,8 +1,8 @@
 <?php
 
-namespace Prototype\Resource\Handlers;
+namespace Ordent\RamenResource\Handlers;
 
-use Prototype\Resource\Container;
+use Ordent\RamenResource\Container;
 
 class Update extends BaseHandler
 {

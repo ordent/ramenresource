@@ -1,18 +1,18 @@
 <?php
 
-namespace Prototype\Resource;
+namespace Ordent\RamenResource;
 
 trait HasHandlerTrait
 {
     protected $handlers = [];
     protected static $defaultHandlers = [
-        'index'         => 'Prototype\Resource\handlers\Index',
-        'show'          => 'Prototype\Resource\handlers\Show',
-        'store'         => 'Prototype\Resource\handlers\Store',
-        'update'        => 'Prototype\Resource\handlers\Update',
-        'delete'        => 'Prototype\Resource\handlers\Delete',
-        'indexRelated'  => 'Prototype\Resource\handlers\IndexRelated',
-        'storeRelated'  => 'Prototype\Resource\handlers\StoreRelated',
+        'index'         => 'Ordent\RamenResource\handlers\Index',
+        'show'          => 'Ordent\RamenResource\handlers\Show',
+        'store'         => 'Ordent\RamenResource\handlers\Store',
+        'update'        => 'Ordent\RamenResource\handlers\Update',
+        'delete'        => 'Ordent\RamenResource\handlers\Delete',
+        'indexRelated'  => 'Ordent\RamenResource\handlers\IndexRelated',
+        'storeRelated'  => 'Ordent\RamenResource\handlers\StoreRelated',
     ];
 
     //resolve handler

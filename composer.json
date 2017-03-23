@@ -13,7 +13,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Prototype\\Resource\\": "src/"
+            "Ordent\\RamenResource\\": "src/"
         }
     },
     "minimum-stability": "dev"

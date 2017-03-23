@@ -1,6 +1,6 @@
 <?php
 
-namespace Prototype\Resource\Errors;
+namespace Ordent\RamenResource\Errors;
 
 use Symfony\Component\HttpKernel\Exception\HttpException;
 

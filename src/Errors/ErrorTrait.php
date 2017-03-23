@@ -1,6 +1,6 @@
 <?php
 
-namespace Prototype\Resource\Errors;
+namespace Ordent\RamenResource\Errors;
 
 trait ErrorTrait
 {
@@ -48,6 +48,17 @@ trait ErrorTrait
 //===========================================================================
 
     public function error($message, $statusCode = 500, $errors = null){
-        throw new ResourceException($statusCode, $message, $errors);
+
+        //create response content in array format
+        $content['message'] = $message;
+        if ( $errors ){
+            $content['errors'] = $errors;
+        }
+
+        //create json response and throw it
+        response()->json($content, $statusCode)->throwResponse();
+        
+        // UNUSED
+        // throw new ResourceException($statusCode, $message, $errors);
     }
 }
