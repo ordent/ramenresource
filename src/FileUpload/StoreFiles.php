@@ -10,32 +10,45 @@ class StoreFiles
 {
     //storage disk instance
     protected $storage;
+    protected $folder = '';
 
     public function __construct(){
 
         //bind storage::disk instance to the object
         //get the disk from config, or use 'public' as default
-        $this->storage = Storage::disk('public');
+        $this->storage = Storage::disk(config('FileUpload.disk', 'public'));
+    }
+
+    //set folder name
+    public function setFolder(string $folderName){
+        $this->folder = $folderName;
+        return $this;
     }
 
     //store $files to the storage and return the path
     public function __invoke($files){
 
+        //if only 1 files given, we change it to array
+        if ( !is_array($files) ){
+            $files = [$files];
+            $singleFile = true;
+        }
+
         //create collection of files
         //then resolve every $files
         //and then save every $files
-        $files = collection($files)
+        $files = collect($files)
             ->transform([$this, 'resolveFile'])
             ->transform([$this, 'saveFile']);
 
-        //if there's only 1 file and the collection is not assosiative,
-        //we extract it from collection and return it. else we return the collection as array
-        return ( 1 === $files->count() && $files->has(0) ) ?
+        //if there's only 1 file in the beginning, we extract it from collection and return it.
+        // else we return the collection as array
+        return isset($singleFile) ?
             $files->pop() : $files->all();
     }
 
     //resolve $file
-    protected function resolveFile($file){
+    public function resolveFile($file){
 
         //if $file is string we assume it is filepath and instantiate it
         if ( is_string($file) ){
@@ -51,12 +64,12 @@ class StoreFiles
     }
 
     //save file and return the path
-    protected function saveFile($file){
-        return $this->storage->putFileAs('', $file, $this->generateFileName($file));
+    public function saveFile($file){
+        return $this->storage->putFileAs($this->folder, $file, $this->generateFileName($file));
     }
 
     //generate random string for filename
     protected function generateFileName($file){
-        return uniqid(str_random(6)).$file->extension();
+        return uniqid(str_random(6)).'.'.$file->extension();
     }
 }
