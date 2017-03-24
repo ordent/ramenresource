@@ -15,7 +15,7 @@ class StoreFiles
 
         //bind storage::disk instance to the object
         //get the disk from config, or use 'public' as default
-        $this->storage = Storage::disk(config('fileUpload.disk', 'public'));
+        $this->storage = Storage::disk('public');
     }
 
     //store $files to the storage and return the path

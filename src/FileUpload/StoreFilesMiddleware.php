@@ -4,8 +4,6 @@ namespace Ordent\RamenResource\FileUpload;
 
 class StoreFilesMiddleware
 {
-    protected $storeFiles;
-
     public function handle($request, $next){
 
         $storeFiles = new StoreFiles;
