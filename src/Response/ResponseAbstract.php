@@ -96,6 +96,11 @@ abstract class ResponseAbstract extends JsonResponse
             ->createData($this->resource)
             ->toJson();
 
+        //throw error if json encode failed
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            throw new InvalidArgumentException(json_last_error_msg());
+        }
+
         //update content and return it
         return $this->update();
     }
@@ -108,8 +113,8 @@ abstract class ResponseAbstract extends JsonResponse
             $transformer = $resource->getTransformer();
         }
 
-        //if $transformer found, return it. else return null
-        return isset($transformer) ? $this->checkTransformerType($transformer) : null;
+        //if $transformer found, return it. else return defaultTransformer
+        return isset($transformer) ? $this->checkTransformerType($transformer) : $this->defaultTransformer();
     }
 
     //check transformer type.
@@ -130,7 +135,8 @@ abstract class ResponseAbstract extends JsonResponse
     protected function defaultSerializer(){
 
         //instantiate serializer from config
-        $serializer = new config('resource.defaultSerializer', DataArraySerializer::class);
+        $serializer = config('resource.defaultSerializer', DataArraySerializer::class);
+        $serializer = new $serializer;
 
         //if $serializer is SerializerAbstract, return it
         if ($serializer instanceof SerializerAbstract) {
@@ -139,5 +145,12 @@ abstract class ResponseAbstract extends JsonResponse
         
         //else throw error
         throw new UnexpectedValueException('default serializer must be instance of '.SerializerAbstract::class);
+    }
+
+    //get default transformer
+    protected function defaultTransformer(){
+        return function($data){
+            return (array) $data;
+        };
     }
 }
