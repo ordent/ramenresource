@@ -1,9 +1,10 @@
 {
     "name": "prototype/resource",
     "require": {
-        "illuminate/pagination": "5.3.*",
-        "illuminate/database": "5.3.*",
-        "illuminate/support": "5.3.*"
+        "illuminate/pagination": "5.4.*",
+        "illuminate/database": "5.4.*",
+        "illuminate/support": "5.4.*",
+        "league/fractal": "0.15.*"
     },
     "authors": [
         {
