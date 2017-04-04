@@ -3,7 +3,7 @@
 namespace Ordent\RamenResource\Validator;
 
 use InvalidArgumentException;
-use Illuminate\Contracts\Validation\Factory;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 class Validate
@@ -14,7 +14,7 @@ class Validate
     public function __construct($ruleSet = null){
 
         //set rules if provided, or get from config
-        $this->setRules($ruleSet ?: (array) config('validationRules'));
+        $this->setRules($ruleSet ?: config('ramenvalidation'));
     }
 
     //get validated data from $container
@@ -36,7 +36,7 @@ class Validate
         }
 
         //validate $data with given $rules, throw error if fails
-        $validator = Factory::make($data, $rules, $messages, $customAttributes);
+        $validator = Validator::make($data, $rules, $messages, $customAttributes);
         if ($validator->fails()){
             response()->errorValidation($validator->errors()->all());
         }
@@ -46,7 +46,7 @@ class Validate
     }
 
     //create new Validate object
-    static public function make($ruleSet = null)){
+    static public function make($ruleSet = null){
         return new static($ruleSet);
     }
 
@@ -60,10 +60,10 @@ class Validate
 
         //if $rules is not array throw error
         if (!is_array($rules)){
-            throw new InvalidArgumentException('rules must be array or object with method "validationRules"');
+            throw new InvalidArgumentException('rules must be an array');
         }
 
-        $this->rulesSet = $rules;
+        $this->ruleSet = $rules;
         return $this;
     }
 }

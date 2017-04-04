@@ -40,6 +40,9 @@ class ServiceProvider extends BaseProvider
         $this->app->singleton(\Ordent\RamenResource\Handlers\Delete::class);
         $this->app->singleton(\Ordent\RamenResource\Handlers\IndexRelated::class);
         $this->app->singleton(\Ordent\RamenResource\Handlers\StoreRelated::class);
+
+        //register validation middleware
+        $this->app['router']->aliasMiddleware('validate', \Ordent\RamenResource\Validator\ValidationMiddleware::class);
     }
 
     /**
