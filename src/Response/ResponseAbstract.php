@@ -21,7 +21,9 @@ abstract class ResponseAbstract extends JsonResponse
     public function __construct($data = [], $status = 200, $headers = []){
 
         $this->fractal = new Manager;
-        $this->fractal->setSerializer($this->defaultSerializer());
+        $this->fractal
+            ->setSerializer($this->defaultSerializer());
+            ->parseIncludes($this->includesInput());
 
         $this->resource = $this->createResource()
             ->setTransformer($this->getTransformerFromResource($data));
@@ -184,5 +186,10 @@ abstract class ResponseAbstract extends JsonResponse
         return function($data){
             return (array) $data;
         };
+    }
+
+    //try to get include param from request, or return empty array
+    protected function includesInput(){
+        return request('include', []);
     }
 }
