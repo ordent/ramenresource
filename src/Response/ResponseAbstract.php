@@ -22,7 +22,7 @@ abstract class ResponseAbstract extends JsonResponse
 
         $this->fractal = new Manager;
         $this->fractal
-            ->setSerializer($this->defaultSerializer());
+            ->setSerializer($this->defaultSerializer())
             ->parseIncludes($this->includesInput());
 
         $this->resource = $this->createResource()
