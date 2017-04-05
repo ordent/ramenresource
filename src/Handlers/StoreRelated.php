@@ -2,18 +2,28 @@
 
 namespace Ordent\RamenResource\Handlers;
 
-use Ordent\RamenResource\Container;
-
-class StoreRelated extends BaseHandler
+class StoreRelated
 {
-	//store related resource
-    public function __invoke(Container $container){
+	use HandlerTrait;
 
-    	//get relation and validated data
-    	$relation = $this->findResource($container);
-    	$data = $this->validateData($container, 'store'.ucfirst($container->relation));
+	//store function
+	protected $store;
+
+	//constructor
+	public function __construct(Store $store){
+		$this->store = $store;
+	}
+
+	//store related resource
+    public function __invoke($model, string $relation, $id, $data, array $parameters = []){
+
+    	//find resource relation using $id and $relation, throw error 404 if not found
+		$relation = $this->findRelation($model, $id, $relation);
+
+		//get store handler
+		$store = $this->store;
 
 		//store new resource and return it
-        return $relation->create($data);
+        return $store($relation, $id, $data, $parameters);
 	}
 }

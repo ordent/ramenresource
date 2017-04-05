@@ -2,14 +2,29 @@
 
 namespace Ordent\RamenResource\Handlers;
 
-use Ordent\RamenResource\Container;
+use Illuminate\Http\Request;
 
-class Show extends BaseHandler
+class Show
 {
-	//show resource
-    public function __invoke(Container $container){
+	use HandlerTrait;
 
-		//find resource from container and return it
-		return $this->findResource($container);
+	//show resource
+	public function __invoke($model, $id, $parameters = []){
+
+		//if $parameters is Request, we extract query as parameters from it
+		if ($parameters instanceof Request){
+			$parameters = $parameters->query();
+		}
+
+		//if $parameters[include] is set, load relation using it
+		if (isset($parameters['include'])){
+			$model = $model->with($parameters['include']);
+		}
+
+		//find resource using id, throw error 404 if not found
+		$resource = $this->findResource($model, $id);
+
+		//return the resource
+		return $resource;
 	}
 }

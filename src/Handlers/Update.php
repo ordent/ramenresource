@@ -2,20 +2,33 @@
 
 namespace Ordent\RamenResource\Handlers;
 
-use Ordent\RamenResource\Container;
+use RuntimeException;
+use Illuminate\Http\Request;
 
-class Update extends BaseHandler
+class Update
 {
-	//store resource
-    public function __invoke(Container $container){
+    use HandlerTrait;
 
-        //get resource and validated data from container
-        $resource = $this->findResource($container);
-        $data = $this->validateData($container, 'update');
+    //store resource
+    public function __invoke($model, $id, $data, array $parameters = []){
 
-		//update data to resource, throw internal error if fails
-        if ( ! $resource->update($data)){
-            $this->errorInternal('update process failed');
+        //if $data is Request, we extract data and parameters from it
+        if ($data instanceof Request){
+            $data = $data->all();
+            $parameters = $data->query();
+        }
+
+        //find resource using id, throw error 404 if not found
+        $resource = $this->findResource($model, $id);
+
+    	//update data to resource, throw error if fails
+        if ( !$resource->update($data)){
+            throw new RuntimeException('update process failed');
+        }
+
+        //if $parameters[include] is set, load relation using it
+        if (isset($parameters['include'])){
+            $resource->load($parameters['include']);
         }
 
         //return the resource

@@ -3,7 +3,7 @@
 namespace Ordent\RamenResource;
 
 use Illuminate\Support\ServiceProvider as BaseProvider;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Response;
 
 class ServiceProvider extends BaseProvider
 {
@@ -17,6 +17,11 @@ class ServiceProvider extends BaseProvider
     public function boot()
     {
 
+        //add response factory to response facade using macro
+        $responseFactory = $this->app[\Ordent\RamenResource\Response\ResponseFactory::class];
+        foreach (get_class_methods($responseFactory) as $method){
+            Response::macro($method, [$responseFactory, $method]);
+        }
     }
 
     /**
@@ -27,6 +32,7 @@ class ServiceProvider extends BaseProvider
     public function register()
     {
         //register local class
+        $this->app->singleton(\Ordent\RamenResource\Response\ResponseFactory::class);
         $this->app->singleton(\Ordent\RamenResource\Handlers\Index::class);
         $this->app->singleton(\Ordent\RamenResource\Handlers\Show::class);
         $this->app->singleton(\Ordent\RamenResource\Handlers\Store::class);
@@ -34,6 +40,9 @@ class ServiceProvider extends BaseProvider
         $this->app->singleton(\Ordent\RamenResource\Handlers\Delete::class);
         $this->app->singleton(\Ordent\RamenResource\Handlers\IndexRelated::class);
         $this->app->singleton(\Ordent\RamenResource\Handlers\StoreRelated::class);
+
+        //register validation middleware
+        $this->app['router']->aliasMiddleware('validate', \Ordent\RamenResource\Validator\ValidationMiddleware::class);
     }
 
     /**
