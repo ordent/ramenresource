@@ -66,7 +66,7 @@ class Client
     }
 
     //execute handler
-    public function execute($handler, ...$arguments = []){
+    public function execute($handler, ...$arguments){
 
         // if handler is not callable, resolve it first
         if ( !is_callable($handler) ){

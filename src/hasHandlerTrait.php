@@ -62,7 +62,7 @@ trait HasHandlerTrait
     protected function setHandlerFromModel($model){
 
         //check 'resourceHandler' function in model.
-        //if it doesn't exist, stop the process
+        //if it doesn't exist, skip the process
         if (!method_exists($model, 'resourceHandler')){
             return;
         }
