@@ -4,6 +4,7 @@ namespace Ordent\RamenResource\Response;
 
 use InvalidArgumentException;
 use UnexpectedValueException;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use League\Fractal\TransformerAbstract;
@@ -184,6 +185,12 @@ abstract class ResponseAbstract extends JsonResponse
 
         //return callable as default transformer
         return function($data){
+
+            //if data is arrayable, we use toArray method
+            if ($data instanceof Arrayable){
+                $data = $data->toArray();
+            }
+
             return (array) $data;
         };
     }
