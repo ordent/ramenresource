@@ -2,13 +2,12 @@
 
 namespace Ordent\RamenResource;
 
-use ReflectionException;
+use InvalidArgumentException;
 use Illuminate\Database\Eloquent\Model;
-use Ordent\RamenResource\Errors\ErrorTrait;
 
 class Client
 {
-    use HasHandlerTrait, ErrorTrait;
+    use HasHandlerTrait;
 
     protected $model;
 
@@ -32,79 +31,59 @@ class Client
 //===========================================================================
 
     //get collection of resources
-    public function index(array $parameters = []){
-
-        $container = $this->newContainer()
-            ->setParameters($parameters);
-
-        return $this->execute('index', $container);
+    public function index($parameters = []){
+        return $this->execute('index', ...func_get_args());
     }
 
     //get single resource
-    public function show($id, array $parameters = []){
-
-        $container = $this->newContainer()
-            ->setIdentifier($id)
-            ->setParameters($parameters);
-
-        return $this->execute('show', $container);
+    public function show($id, $parameters = []){
+        return $this->execute('show', ...func_get_args());
     }
 
     //store single resource
-    public function store(array $data, array $parameters = []){
-
-        $container = $this->newContainer()
-            ->setData($data)
-            ->setParameters($parameters);
-
-        return $this->execute('store', $container);
+    public function store($data, array $parameters = []){
+        return $this->execute('store', ...func_get_args());
     }
 
     //update single resource
-    public function update($id, array $data, array $parameters = []){
-        $container = $this->newContainer()
-            ->setIdentifier($id)
-            ->setData($data)
-            ->setParameters($parameters);
-
-        return $this->execute('update', $container);
+    public function update($id, $data, array $parameters = []){
+        return $this->execute('update', ...func_get_args());
     }
 
     //delete single resource
-    public function delete($id, array $parameters = []){
-        $container = $this->newContainer()
-            ->setIdentifier($id)
-            ->setParameters($parameters);
-
-        return $this->execute('delete', $container);
+    public function delete($id, $parameters = []){
+        return $this->execute('delete', ...func_get_args());
     }
 
     //get collection related resource
-    public function indexRelated(string $relation, $id, array $parameters = []){
-        $container = $this->newContainer()
-            ->setIdentifier($id, $relation)
-            ->setParameters($parameters);
-
-        return $this->execute('indexRelated', $container);
+    public function indexRelated(string $relation, $id, $parameters = []){
+        return $this->execute('indexRelated', ...func_get_args());
     }
 
     //store new related resource
-    public function storeRelated(string $relation, $id, array $data, array $parameters = []){
-        $container = $this->newContainer()
-            ->setIdentifier($id, $relation)
-            ->setData($data)
-            ->setParameters($parameters);
-
-        return $this->execute('storeRelated', $container);
+    public function storeRelated(string $relation, $id, $data, array $parameters = []){
+        return $this->execute('storeRelated', ...func_get_args());
     }
 
-    //dynamic execute handler, for custom handler
-    public function __call($method, $parameters){
+    //execute handler
+    public function execute($handler, ...$arguments){
+
+        // if handler is not callable, resolve it first
+        if ( !is_callable($handler) ){
+            $handler = $this->resolveHandler($handler);
+        }
+
+        //execute $handler with $model and $arguments
+        return $handler($this->model, ...$arguments);
+    }
+
+    //dynamic execute handler, especially for custom handler
+    public function __call($method, $parameters = []){
 
         //dynamic index related
         if ( starts_with($method, 'index') ){
 
-            //generate key name.
+            //get relation name.
             //remove 'index' prefix and lowercase first letter from $method
             $relation = lcfirst(substr($method, strlen('index')));
 
@@ -127,56 +106,24 @@ class Client
         return $this->execute($method, ...$parameters);
     }
 
-//main function
-//===========================================================================
-
-    //execute handler
-    public function execute($handler, $container, string $relation = null, array $data = [], array $parameters = []){
-
-        // if handler is not callable, resolve it
-        if ( !is_callable($handler) ){
-            $handler = $this->resolveHandler($handler);
-        }
-
-        // if $container is not Container object, we assume it is $id
-        // and create new Container using it and the rest of arguments
-        if ( !($container instanceOf Container)){
-            $container = $this->newContainer()
-                ->setIdentifier($container, $relation)
-                ->setData($data)
-                ->setParameters($parameters);
-        }
-
-        //execute $handler with $input as argument
-        return $handler($container);
-    }
-
 //helpers
 //===========================================================================
 
-    //create new empty container
-    public function newContainer(){
-        return new Container($this->model);
-    }
-
+    //resolve $model
     protected function resolveModel($modelName){
 
         //if $modelName is string, we try instantiante it first
         if ( is_string($modelName) ){
-            try {
-                $model = app($modelName);
-            }catch (ReflectionException $exception) {
-                $model = null;
-            }
+            $model = resolve($modelName);
         }
 
-        //if model isn't instance of eloquent, throw error 404
-        if ( !($model instanceOf Model) ) {
-            $this->errorInternal('Resource model not found');
+        //if model is instance of Model, return it
+        if ($model instanceOf Model) {
+            return $model;
         }
 
-        //return the model
-        return $model;
+        //else throw error
+        throw new InvalidArgumentException('model input must be model instance or path of the model class');
     }
 
     //get client's model

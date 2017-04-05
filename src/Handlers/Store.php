@@ -2,17 +2,30 @@
 
 namespace Ordent\RamenResource\Handlers;
 
-use Ordent\RamenResource\Container;
+use Illuminate\Http\Request;
 
-class Store extends BaseHandler
+class Store
 {
+	use HandlerTrait;
+
 	//store resource
-    public function __invoke(Container $container){
+	public function __invoke($model, $data, array $parameters = []){
 
-    	//get validated data from resource
-    	$data = $this->validateData($container, 'store');
+		//if $data is Request, we extract data and parameters from it
+		if ($data instanceof Request){
+			$data = $data->all();
+			$parameters = $data->query();
+		}
 
-		//store new resource and return it
-        return $container->model->create($data);
+		//create new resource
+		$resource = $model->create($data);
+
+		//if $parameters[include] is set, load relation using it
+		if (isset($parameters['include'])){
+			$resource->load($parameters['include']);
+		}
+
+		//return the resource
+		return $resource;
 	}
 }
