@@ -2,6 +2,8 @@
 
 namespace Ordent\RamenResource;
 
+use InvalidArgumentException;
+
 trait HasHandlerTrait
 {
     protected $handlers = [];
@@ -16,28 +18,40 @@ trait HasHandlerTrait
     ];
 
     //resolve handler
-    public function resolveHandler(string $handler){
+    protected function resolveHandler(string $handler){
 
         // check user defined handler. if exist we return it
         if ( isset($this->handlers[$handler]) ){
-            return $this->handlers[$handler];
+            return $this->getHandler($handler);
         }
 
-        // if not found then we check from default handler
+        // if not found then we try to get from default handler
         if ( isset(static::$defaultHandlers[$handler]) ){
             return $this->getDefaultHandler($handler);
         }
 
         //if still not found, throw error
-        $this->errorInternal("Method {$handler} not Found");
+        throw new InvalidArgumentException("Resource handler {$handler} not Found");
+    }
+
+    //get user defined handler
+    protected function getHandler(string $handler){
+
+        //instantiate the handler if it is string
+        if (is_string($this->handlers[$handler])){
+            $this->handlers[$handler] = resolve($this->handlers[$handler]);
+        }
+
+        //return the handler
+        return $this->handlers[$handler];        
     }
 
     //get default handler
-    public function getDefaultHandler(string $handler){
+    protected function getDefaultHandler(string $handler){
 
-        //if the handler is not instantiated, we instantiate it first
-        if ( is_string(static::$defaultHandlers[$handler]) ){
-            static::$defaultHandlers[$handler] = app(static::$defaultHandlers[$handler]);
+        //instantiate the handler if it isn't yet
+        if (is_string(static::$defaultHandlers[$handler])){
+            static::$defaultHandlers[$handler] = resolve(static::$defaultHandlers[$handler]);
         }
 
         //return the handler
@@ -47,24 +61,46 @@ trait HasHandlerTrait
     //get user defined handler from model
     protected function setHandlerFromModel($model){
 
-        // get all method name from model. stop process if empty
-        $methods = get_class_methods($model);
-        if ( !$methods ){
+        //check 'resourceHandler' function in model.
+        //if it doesn't exist, stop the process
+        if (!method_exists($model, 'resourceHandler')){
             return;
         }
 
-        //filter $methods to get handlers
-        foreach ($methods as $method) {
+        //get handler from model
+        $handler = $model->resourceHandler();
 
-            //process only $method with prefix 'resource'
-            if (starts_with($method, 'resource')) {
+        //if handler is string, we assume it is handler class path
+        //so we instantiate it
+        if (is_string($handler)){
+            $handler = resolve($handler);
+        }
 
-                //generate key name.
-                //remove 'resource' prefix and lowercase first letter from $method
-                $key = lcfirst(substr($method, strlen('resource')));
+        //if handler is object, extract every public method as handler
+        if (is_object($handler)){
+            $methods = get_class_methods($model);
+            foreach ($methods as $method) {
+                
+                //skip any magic method
+                if (starts_with($method, '__')){
+                    break;
+                }
 
-                //insert $model and $method as callable to $this->handlers
-                $this->handlers[$key] = [$model, $method];
+                //register handler
+                $this->handlers[$method] = [$handler, $method];
+            }
+        }
+
+        //else if handler is array, extract every callable value from it as handler
+        elseif (is_array($handler)){
+
+            //filter $methods to get handlers
+            foreach ($handler as $key => $value) {
+
+                //only register $value if it is callable or string
+                if (is_string($value) || is_callable($value)){
+                    $this->handlers[$key] = $value;
+                }
             }
         }
     }

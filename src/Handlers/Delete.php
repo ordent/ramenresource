@@ -2,19 +2,31 @@
 
 namespace Ordent\RamenResource\Handlers;
 
-use Ordent\RamenResource\Container;
+use Illuminate\Http\Request;
 
-class Delete extends BaseHandler
+class Delete
 {
-	//show resource
-    public function __invoke(Container $container){
+    use HandlerTrait;
 
-        //get resource
-        $resource = $this->findResource($container);
+	//show resource
+    public function __invoke($model, $id, $parameters = []){
+
+        //if $parameters is Request, we extract query as parameters from it
+        if ($parameters instanceof Request){
+            $parameters = $parameters->query();
+        }
+
+        //find resource using id, throw error 404 if not found
+        $resource = $this->findResource($model, $id);
+
+        //if $parameters[include] is set, load relation using it
+        if (isset($parameters['include'])){
+            $model = $model->with($parameters['include']);
+        }
 
         //delete resource, throw internal error if fails
         if ( !$resource->delete() ){
-            $this->errorInternal('delete process failed');
+            throw new RuntimeException('delete process failed');
         }
 
         //return resource

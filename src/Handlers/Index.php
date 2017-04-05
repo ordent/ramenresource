@@ -2,17 +2,29 @@
 
 namespace Ordent\RamenResource\Handlers;
 
-use Ordent\RamenResource\Container;
+use Illuminate\Http\Request;
 
-class Index extends BaseHandler
+class Index
 {
+	use HandlerTrait;
+
 	//get collection of resources
-    public function __invoke(Container $container){
+    public function __invoke($model, $parameters = []){
 
-        //get filtered query
-    	$query = $this->indexFilter($container->model, $container->parameters);
+    	//if $parameters is Request, we extract query as parameters from it
+		if ($parameters instanceof Request){
+			$parameters = $parameters->query();
+		}
 
-        //return indexed resource
-        return $this->getIndex($query, $container->parameters);
+		//run index filter if any
+		$query = $this->indexFilter($model, $parameters);
+
+		//if $parameters[include] is set, load relation using it
+		if (isset($parameters['include'])){
+			$query = $query->with($parameters['include']);
+		}
+
+        //get index result and return it
+        return $this->indexResult($query, $parameters);
     }
 }
