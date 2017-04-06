@@ -4,11 +4,13 @@ namespace Ordent\RamenResource\FileUpload;
 
 class StoreFilesMiddleware
 {
+	use StoreFilesTrait;
+
     public function handle($request, $next){
 
-        $storeFiles = new StoreFiles;
-
-        $request->merge($storeFiles($request->allFiles()));
+    	//store all files found from request
+    	//then merge the result back to request
+        $request->merge($this->storeFiles($request->allFiles()));
 
         return $next($request);
     }    
