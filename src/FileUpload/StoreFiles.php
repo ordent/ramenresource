@@ -28,26 +28,26 @@ class StoreFiles
     }
 
     //store $files to the storage and return the path
-    public function __invoke($key, $files = null){
+    public function __invoke($key, $file = null){
 
-        //if $files is string, then we assume the input is key - value pair
+        //if $file is string, then we assume the input is key - value pair
         //so we convert it to array first
         if (!is_array($key)){
-            $key = [$key => $files];
+            $key = [$key => $file];
             $singleFile = true;
         }
 
         //create collection of files to make process easier
         //resolve every files first
         //and then save all of it
-        $files = collect($files)
+        $fileCollection = collect($key)
             ->transform([$this, 'resolveFile'])
             ->transform([$this, 'saveFile']);
 
         //if there's originnaly only 1 file, we extract it from collection and return it.
         // else we return the collection as array
         return isset($singleFile) ?
-            $files->pop() : $files->all();
+            $fileCollection->pop() : $fileCollection->all();
     }
 
     //resolve $file
