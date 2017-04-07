@@ -53,6 +53,16 @@ class StoreFiles
     //resolve $file
     public function resolveFile($file){
 
+        //if $file is array, we call this function recursively
+        if (is_array($file)){
+
+            foreach ($file as $key => $value) {
+                $file[$key] => $this->resolveFile($value);
+            }
+
+            return $file;
+        }
+
         //if $file is string we assume it is filepath and instantiate it
         if ( is_string($file) ){
             $file = new File($file);
@@ -69,6 +79,16 @@ class StoreFiles
 
     //save file and return the path
     public function saveFile($file, $keyName){
+
+        //if $file is array, we call this function recursively
+        if (is_array($file)){
+
+            foreach ($file as $key => $value) {
+                $file[$key] => $this->saveFile($value, $keyName);
+            }
+
+            return $file;
+        }
 
         //get config by keyName
         $config = $this->getConfig($keyName);
