@@ -63,7 +63,9 @@ class ResponseFactory
             $content['detail'] = $detail;
         }
 
+        $data['errors'] = $content;
+
         //create json response and throw it
-        response()->json($content, $statusCode)->throwResponse();
+        response()->json($data, $statusCode)->throwResponse();
     }
 }
