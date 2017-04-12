@@ -21,7 +21,7 @@ trait ResourceControllerTrait
 
     //show single resource
     public function show(Request $request, $id){
-        return response()->resourceItem($this->resource->index($id, $request));
+        return response()->resourceItem($this->resource->show($id, $request));
     }
 
     //store new resource
