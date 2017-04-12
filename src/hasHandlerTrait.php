@@ -3,6 +3,7 @@
 namespace Ordent\RamenResource;
 
 use InvalidArgumentException;
+use UnexpectedValueException;
 
 trait HasHandlerTrait
 {
@@ -22,7 +23,7 @@ trait HasHandlerTrait
 
         // check user defined handler. if exist we return it
         if ( isset($this->handlers[$handler]) ){
-            return $this->getHandler($handler);
+            return $this->handlers[$handler];
         }
 
         // if not found then we try to get from default handler
@@ -32,18 +33,6 @@ trait HasHandlerTrait
 
         //if still not found, throw error
         throw new InvalidArgumentException("Resource handler {$handler} not Found");
-    }
-
-    //get user defined handler
-    protected function getHandler(string $handler){
-
-        //instantiate the handler if it is string
-        if (is_string($this->handlers[$handler])){
-            $this->handlers[$handler] = resolve($this->handlers[$handler]);
-        }
-
-        //return the handler
-        return $this->handlers[$handler];        
     }
 
     //get default handler
@@ -97,10 +86,13 @@ trait HasHandlerTrait
             //filter $methods to get handlers
             foreach ($handler as $key => $value) {
 
-                //only register $value if it is callable or string
-                if (is_string($value) || is_callable($value)){
-                    $this->handlers[$key] = $value;
+                //if $value isn't callable, throw error
+                if (!is_callable($value)){
+                    throw new UnexpectedValueException('handler must be callable');
                 }
+
+                //register handler
+                $this->handlers[$key] = $value;
             }
         }
     }

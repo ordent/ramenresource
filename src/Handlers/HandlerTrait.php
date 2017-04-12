@@ -64,7 +64,8 @@ trait HandlerTrait
     protected function indexResult($query, $parameters = []){
 
         //if page or limit exist, we will paginate resource
-        $limit = isset($parameters['limit']) ? (int) $parameters['limit'] : null;
+        //only get limit if it greater than 0
+        $limit = ((isset($parameters['limit'])) && (0 <= $parameters['limit'])) ? (int) $parameters['limit'] : null;
         if ( isset($parameters['page']) || isset($limit) ){
             return $query->paginate($limit);
         }
