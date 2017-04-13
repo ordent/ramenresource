@@ -13,8 +13,8 @@ class Store
 
 		//if $data is Request, we extract data and parameters from it
 		if ($data instanceof Request){
-			$data = $data->all();
 			$parameters = $data->query();
+			$data = $data->all();
 		}
 
 		//create new resource

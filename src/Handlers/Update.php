@@ -14,8 +14,8 @@ class Update
 
         //if $data is Request, we extract data and parameters from it
         if ($data instanceof Request){
-            $data = $data->all();
             $parameters = $data->query();
+            $data = $data->all();
         }
 
         //find resource using id, throw error 404 if not found
