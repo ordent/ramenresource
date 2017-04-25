@@ -16,11 +16,6 @@ class Show
 			$parameters = $parameters->query();
 		}
 
-		//if $parameters[include] is set, load relation using it
-		if (isset($parameters['include'])){
-			$model = $model->with($parameters['include']);
-		}
-
 		//find resource using id, throw error 404 if not found
 		$resource = $this->findResource($model, $id);
 

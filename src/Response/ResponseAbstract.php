@@ -7,6 +7,9 @@ use UnexpectedValueException;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\AbstractPaginator;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 use League\Fractal\TransformerAbstract;
 use League\Fractal\Manager;
 use League\Fractal\Serializer\SerializerAbstract;
@@ -118,6 +121,9 @@ abstract class ResponseAbstract extends JsonResponse
     //update data using fractal
     public function updateData(){
 
+        //eager load relation
+        $this->eagerLoadRelation();
+
         //create data using fractal manager
         $this->data = $this->fractal
             ->createData($this->resource)
@@ -198,5 +204,47 @@ abstract class ResponseAbstract extends JsonResponse
     //try to get include param from request, or return empty array
     protected function includesInput(){
         return request('include', []);
+    }
+
+    //get included relation
+    protected function getIncludedRelation(){
+
+        //get transformer and includes input
+        $transformer = $this->resource->getTransformer();
+        $includes = $this->includesInput();
+
+        //return empty array if transformer isn't instanceof transformerAbstract or if includes is empty
+        if ( !($transformer instanceof TransformerAbstract) || !$includes){
+            return [];
+        }
+
+        //intersect include-input with available-include, then merge with default-include
+        //remove any duplicate values and return it
+        return collect($includes)
+            ->diff($transformer->getAvailableIncludes())
+            ->merge($transformer->getDefaultIncludes())
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    //eager lod relation
+    protected function eagerLoadRelation(){
+
+        //if resource is paginator, extract resource collection from it. else just return it
+        $resource = ($this->original instanceof AbstractPaginator) ?
+            $this->original->getCollection() : $this->original;
+
+        //skip process if resource is not eloquent model or collection
+        if ( !($resource instanceof Model || $resource instanceof Collection)){
+            return;
+        }
+
+        //get list of included relation
+        $relation = $this->getIncludedRelation();
+
+        //try to load relation
+        //TODO : throw error properly
+        $resource->load($relation);
     }
 }

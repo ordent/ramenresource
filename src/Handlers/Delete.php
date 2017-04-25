@@ -19,11 +19,6 @@ class Delete
         //find resource using id, throw error 404 if not found
         $resource = $this->findResource($model, $id);
 
-        //if $parameters[include] is set, load relation using it
-        if (isset($parameters['include'])){
-            $model = $model->with($parameters['include']);
-        }
-
         //delete resource, throw internal error if fails
         if ( !$resource->delete() ){
             throw new RuntimeException('delete process failed');
