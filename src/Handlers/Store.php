@@ -20,11 +20,6 @@ class Store
 		//create new resource
 		$resource = $model->create($data);
 
-		//if $parameters[include] is set, load relation using it
-		if (isset($parameters['include'])){
-			$resource->load($parameters['include']);
-		}
-
 		//return the resource
 		return $resource;
 	}

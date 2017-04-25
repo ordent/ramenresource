@@ -8,6 +8,8 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\AbstractPaginator;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 use League\Fractal\TransformerAbstract;
 use League\Fractal\Manager;
 use League\Fractal\Serializer\SerializerAbstract;
@@ -212,7 +214,7 @@ abstract class ResponseAbstract extends JsonResponse
         $includes = $this->includesInput();
 
         //return empty array if transformer isn't instanceof transformerAbstract or if includes is empty
-        if ( !($transformer instanceof TransformerAbstract) || !$includesInput){
+        if ( !($transformer instanceof TransformerAbstract) || !$includes){
             return [];
         }
 

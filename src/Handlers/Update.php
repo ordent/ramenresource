@@ -26,11 +26,6 @@ class Update
             throw new RuntimeException('update process failed');
         }
 
-        //if $parameters[include] is set, load relation using it
-        if (isset($parameters['include'])){
-            $resource->load($parameters['include']);
-        }
-
         //return the resource
         return $resource;
 	}

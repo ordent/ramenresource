@@ -19,11 +19,6 @@ class Index
 		//run index filter if any
 		$query = $this->indexFilter($model, $parameters);
 
-		//if $parameters[include] is set, load relation using it
-		if (isset($parameters['include'])){
-			$query = $query->with($parameters['include']);
-		}
-
         //get index result and return it
         return $this->indexResult($query, $parameters);
     }
