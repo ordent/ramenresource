@@ -1,5 +1,5 @@
 {
-    "name": "prototype/resource",
+    "name": "ordent/ramenresource",
     "require": {
         "illuminate/pagination": "5.4.*",
         "illuminate/database": "5.4.*",
@@ -7,6 +7,10 @@
         "league/fractal": "0.15.*"
     },
     "authors": [
+	{
+	    "name": "Dimas Satrio",
+	    "email": "dimassrio@gmail.com"
+	},
         {
             "name": "BlueMagenta",
             "email": "ryodbluedragon@gmail.com"
