@@ -9,13 +9,13 @@ trait HasHandlerTrait
 {
     protected $handlers = [];
     protected static $defaultHandlers = [
-        'index'         => 'Ordent\RamenResource\handlers\Index',
-        'show'          => 'Ordent\RamenResource\handlers\Show',
-        'store'         => 'Ordent\RamenResource\handlers\Store',
-        'update'        => 'Ordent\RamenResource\handlers\Update',
-        'delete'        => 'Ordent\RamenResource\handlers\Delete',
-        'indexRelated'  => 'Ordent\RamenResource\handlers\IndexRelated',
-        'storeRelated'  => 'Ordent\RamenResource\handlers\StoreRelated',
+        'index'         => 'Ordent\RamenResource\Handlers\Index',
+        'show'          => 'Ordent\RamenResource\Handlers\Show',
+        'store'         => 'Ordent\RamenResource\Handlers\Store',
+        'update'        => 'Ordent\RamenResource\Handlers\Update',
+        'delete'        => 'Ordent\RamenResource\Handlers\Delete',
+        'indexRelated'  => 'Ordent\RamenResource\Handlers\IndexRelated',
+        'storeRelated'  => 'Ordent\RamenResource\Handlers\StoreRelated',
     ];
 
     //resolve handler
