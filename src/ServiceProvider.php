@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Response;
 
 class ServiceProvider extends BaseProvider
 {
-    protected $defer = true;
-
     /**
      * Bootstrap the application services.
      *
