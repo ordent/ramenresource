@@ -201,9 +201,9 @@ abstract class ResponseAbstract extends JsonResponse
         };
     }
 
-    //try to get include param from request, or return empty array
+    //try to get include param from request, or return empty string
     protected function includesInput(){
-        return request('include', []);
+        return explode(',', request('include', ''));
     }
 
     //get included relation
