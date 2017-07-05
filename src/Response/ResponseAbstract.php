@@ -203,7 +203,9 @@ abstract class ResponseAbstract extends JsonResponse
 
     //try to get include param from request, or return empty string
     protected function includesInput(){
-        return explode(',', request('include', ''));
+
+        $include = request('include');
+        return $include ? explode(',', $include) : '';
     }
 
     //get included relation
@@ -221,7 +223,7 @@ abstract class ResponseAbstract extends JsonResponse
         //intersect include-input with available-include, then merge with default-include
         //remove any duplicate values and return it
         return collect($includes)
-            ->diff($transformer->getAvailableIncludes())
+            ->intersect($transformer->getAvailableIncludes())
             ->merge($transformer->getDefaultIncludes())
             ->unique()
             ->values()
